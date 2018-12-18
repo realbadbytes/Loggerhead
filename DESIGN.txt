@@ -15,4 +15,27 @@ Program to do Cramer's 'homework' automatically. Initially, this will consist of
 * Graphing of data
 * Gather stream of articles related to selected companies from all feeds (see Sentiment project)
 
+====================
+== PLANNED FEATURES
+====================
+What is homework, really?
+* Quarterly and annual report analysis
+* Research firm reports
+* Local news
+* Conference calls
+* Product margin evaluation, how much does a company make per sale?
+* Competition evaluation
+* Market cycle analysis, is the company reliant on cycles?
+* How does the business evaluate its health? Revenue, margin, market share, other? What drives macro decisions?
+* Is this metric growing faster than competitors?
+* DEBT. IS. BAD.
+
+
+
+
+
+
+
+
+
 
