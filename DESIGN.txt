@@ -2,21 +2,21 @@
 == INITIAL THOUGHTS
 ====================
 
-Program to do Cramer's 'homework' automatically. Initially, this will consist of:
-* Calculating multiples
-* Ranking each company within its industry
-* Color coding, stoplight style
-* Text-based UI, mouse interaction
-* Tunable update period, default 30 seconds
+Program to locate companies worth manual homework.
+Also to do some of Cramer's 'homework' automatically. Initially, this will consist of:
+* Filtering by positive EPS and market cap
+* Displaying multiple and whatever other measurements are desired
+* Crudely ranking each company within its industry
 
 ====================
 == PLANNED FEATURES
 ====================
 * Graphing of data
-* Gather stream of articles related to selected companies from all feeds (see Sentiment project)
+* Storing output for comparison with newer output, change detection
+* Gather stream of articles related to chosen companies
 
 ====================
-== PLANNED FEATURES
+== RANDOM NOTES
 ====================
 What is homework, really?
 * Quarterly and annual report analysis
@@ -30,7 +30,13 @@ What is homework, really?
 * Is this metric growing faster than competitors?
 * DEBT. IS. BAD.
 
+Be careful when using sector average multiples. The data can be massively skewed, especially in sectors
+with a small amount of companies. The growth of a single company may throw the average off and make
+other companies look massively underperforming, when it isn't really the case. Sector average multiples
+should have a long lead up time to combat this effect.
 
+Look for sectors with small numbers of competitors, this will spark buyouts/conglomerate formation. 5-6 top
+competitors is a great place to find opportunity, even if they are properly valued from a metrics perspective.
 
 
 
