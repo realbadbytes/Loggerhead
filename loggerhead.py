@@ -27,8 +27,7 @@ def get_hits(symbols):
             latest_eps = key_stats['latestEPS']
             last_price = stock.get_price()
             # Filter by cramer's recommended "improperly handicapped" zone of $100 to $400 million
-            # Widen to $2 billion for now because hits are very low.
-            if (latest_eps > 0) and (100000000 < marketcap <= 2000000000):
+            if (latest_eps > 0) and (100000000 < marketcap <= 400000000):
                 multiple = (last_price / latest_eps)
                 container['symbol'] = symbol
                 container['marketcap'] = marketcap
