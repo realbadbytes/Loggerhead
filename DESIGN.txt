@@ -12,6 +12,7 @@ Also to do some of Cramer's 'homework' automatically. Initially, this will consi
 == PLANNED FEATURES
 ====================
 * Graphing of data
+* Alert on very large trade volumes so we can follow hedge funds / portfolio manager moves
 * Storing output for comparison with newer output, change detection
 * Gather stream of articles related to chosen companies
 
