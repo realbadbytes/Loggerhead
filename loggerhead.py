@@ -16,9 +16,17 @@ endpoint = 'https://api.iextrading.com/1.0'
 
 
 def get_hits(symbols):
+    """ Query the API and filter results based on some condition
+
+    :param symbols: List of stock symbols from a particular industry
+    :returns: List of stock symbols matching our criteria
+    """
+
     hits = []
+
     for symbol in symbols:
         container = {}
+
         try:
             stock = Stock(symbol)
             key_stats = stock.get_key_stats()
@@ -26,6 +34,7 @@ def get_hits(symbols):
             marketcap = key_stats['marketcap']
             latest_eps = key_stats['latestEPS']
             last_price = stock.get_price()
+
             # Filter by cramer's recommended "improperly handicapped" zone of $100 to $400 million
             if (latest_eps > 0) and (100000000 < marketcap <= 400000000):
                 multiple = (last_price / latest_eps)
@@ -36,13 +45,20 @@ def get_hits(symbols):
                 logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}\n' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
+
         except IEXSymbolError as e:
             logger.error(str(e))
             continue
+
     return hits
 
 
 def load_industry_syms(industry):
+    """ Parse all symbols from .csv file containing all stock symbols for a particular industry.
+
+    :param industry: User-provided industry string
+    :returns: List of symbols in a particular industry
+    """
     industry_symbols = []
     with open('industry_data/'+industry+'.csv') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -69,7 +85,6 @@ def main():
     industry = sys.argv[1]
     industry_symbols = load_industry_syms(industry)
     logger.info('Loaded {0} symbols in {1}\n'.format(len(industry_symbols), industry))
-    # Hit criteria is defined in the get_hits function temporarily
     hits = get_hits(industry_symbols)
     logger.info('Found {0} stock(s) of interest in {1}\n'.format(len(hits), industry))
 
