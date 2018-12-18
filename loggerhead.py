@@ -6,6 +6,7 @@ import time
 import coloredlogs
 import verboselogs
 import logging
+from time import sleep
 from intrinio_sdk.rest import ApiException
 from industries import NYSE_HEALTHCARE
 
@@ -22,13 +23,16 @@ def get_data(symbol_list, industry_name):
             eps = company_api.get_company_data_point_number(symbol, tag='basiceps')
             # Filter by companies that have positive EPS
             if eps > 0:
+                sleep(1)
                 mktcap = company_api.get_company_data_point_number(symbol, tag='marketcap')
 
-                # We target mkt cap of $100 to $400 million
+                # We target mkt cap of $100 to 2 billion ($400 million later)
                 if 100000000 < mktcap < 2000000000:
                     logger.success('Positive EPS and good market cap range for symbol {}'.format(symbol))
                     # Get relevant metrics for hit
+                    sleep(1)
                     lastprice = company_api.get_company_data_point_number(symbol, tag='last_price')
+                    sleep(1)
                     multiple = company_api.get_company_data_point_number(symbol, tag='pricetoearnings')
                     #evtoebitda = company_api.get_company_data_point_number(symbol, tag='evtoebitda')
                     #epsgrowth = company_api.get_company_data_point_number(symbol, tag='epsgrowth')
