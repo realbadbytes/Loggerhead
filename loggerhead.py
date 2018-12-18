@@ -34,7 +34,7 @@ def get_hits(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}' \
+                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}\n' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
         except IEXSymbolError as e:
@@ -54,9 +54,9 @@ def load_industry_syms(industry):
 
 def usage():
     print('Loggerhead v1.0\n\n\tusage: ./loggerhead.py [industry]\n\n\tAvailable industries:\n' \
-            '\n\tbasic\tcapital_goods\tconsumer_durables\tconsumer_nondurables\n' \
-            '\tconsumer_services\tenergy\t\tfinance\t\thealthcare\n' \
-            '\tmisc\tpublic_utilities\ttechnology\ttransportation\n')
+            '\n\t\tbasic_industries\n\t\tcapital_goods\n\t\tconsumer_durables\n\t\tconsumer_nondurables\t\t' \
+            '\n\t\tconsumer_services\n\t\tenergy\n\t\tfinance\n\t\thealthcare\t\t' \
+            '\n\t\tmisc\n\t\tpublic_utilities\n\t\ttechnology\n\t\ttransportation\n')
 
 
 def main():
@@ -69,10 +69,10 @@ def main():
 
     industry = sys.argv[1]
     industry_symbols = load_industry_syms(industry)
-    logger.success('Loaded {0} symbols in the {1} industry.'.format(len(industry_symbols), industry))
+    logger.info('Loaded {0} symbols in {1}\n'.format(len(industry_symbols), industry))
     # Hit criteria is defined in the get_hits function temporarily
     hits = get_hits(industry_symbols)
-    logger.success('Found {0} stock(s) of interest in the {1} industry.'.format(len(hits), industry))
+    logger.info('Found {0} stock(s) of interest in {1}\n'.format(len(hits), industry))
 
 
 if __name__ == '__main__':
