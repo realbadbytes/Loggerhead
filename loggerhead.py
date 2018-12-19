@@ -39,7 +39,7 @@ def cramer_micro_cap(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t       Last price: {2}\n\t\t\t\t       Multiple: {3}' \
+                logger.success('Hit on {0}:{1}\n\t\t\t\t       Last price: ${2}\n\t\t\t\t       Multiple: {3}' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
@@ -74,7 +74,7 @@ def cramer_small_cap(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t       Last price: {2}\n\t\t\t\t       Multiple: {3}' \
+                logger.success('Hit on {0}:{1}\n\t\t\t\t       Last price: ${2}\n\t\t\t\t       Multiple: {3}' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
@@ -122,6 +122,40 @@ def large_trades_halfpcnt(symbols):
 
     return hits
 
+def lowest_buzz_highest_eps(symbols):
+    """ Query the API and filter results based on positive EPS, high positive EPS surprise % (> 100%), 
+        and low news buzz in past 50 days (<= 1 story).
+        This should indicate that people don't really know whats going on in the company and/or analysts
+        dont have all the information. This stock could be improperly handicapped and present a nice opportunity.
+
+    :param symbols: List of stock symbols from a particular industry.
+    :returns: List of stock symbols matching the criteria.
+    """
+    hits = []
+    for symbol in symbols:
+        container = {}
+        try:
+            stock = Stock(symbol)
+            key_stats = stock.get_key_stats()
+            latest_eps = key_stats['latestEPS']
+            eps_surprise_pcnt = key_stats['EPSSurprisePercent']
+            news_buzz = stock.get_news(range=50)
+            logger.notice('{0} - {1} news stories EPS surprise {2:.2%}, and latest EPS {3}'
+                    .format(symbol, len(news_buzz), eps_surprise_pcnt, latest_eps))
+            if (len(news_buzz) <= 1) and (latest_eps > 0) and (eps_surprise_pcnt > 0):
+                container['symbol'] = symbol
+                hits.append(container)
+                logger.success('Hit on {0}:\n\t\t\t\t       EPS Surprise %: {1:.2%}\n\t\t\t\t' \
+                        '       Latest EPS: ${2}\n\t\t\t\t       News stories: {3}' \
+                        .format(symbol, eps_surprise_pcnt, latest_eps, len(news_buzz)))
+                hits.append(container)
+
+        except IEXSymbolError as e:
+            logger.error(str(e))
+            continue
+
+    return hits
+
 
 def load_industry_syms(industry):
     """ Parse all symbols from .csv file containing all stock symbols for a particular industry.
@@ -144,7 +178,8 @@ def usage():
             '\n\t\tmisc\n\t\tpublic_utilities\n\t\ttechnology\n\t\ttransportation\n' \
             '\n\tAvailable filters:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS\n' \
             '\t\t2 - Cramer\'s $100 mil to $2 billion market cap and positive EPS\n' \
-            '\t\t3 - Large trades greater than .5% of shares outstanding\n')
+            '\t\t3 - Large trades greater than .5% of shares outstanding\n' \
+            '\t\t4 - Stocks with highest EPS, positive past EPS surprise percentage, and lowest news buzz\n')
 
 
 def main():
@@ -162,13 +197,15 @@ def main():
     logger.info('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
 
     # Run selected filter
-    algo = int(sys.argv[2])
-    if algo == 1:
+    choice = int(sys.argv[2])
+    if choice == 1:
         hits = cramer_micro_cap(industry_symbols)
-    elif algo == 2:
+    elif choice == 2:
         hits = cramer_small_cap(industry_symbols)
-    elif algo == 3:
+    elif choice == 3:
         hits = large_trades_halfpcnt(industry_symbols)
+    elif choice == 4:
+        lowest_buzz_highest_eps(industry_symbols)
 
     logger.success('Found {0} stock(s) of interest in {1} --> {2}'.format(len(hits), industry, hits))
 
