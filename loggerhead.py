@@ -71,6 +71,7 @@ def cramer_small_cap(symbols):
             if (latest_eps > 0) and (100000000 < marketcap <= 2000000000):
                 multiple = (last_price / latest_eps)
                 container['symbol'] = symbol
+                container['name'] = name
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
@@ -98,7 +99,9 @@ def large_trades_halfpcnt(symbols):
         try:
             stock = Stock(symbol)
             largest_trades = stock.get_largest_trades()
-            shares_outstanding = stock.get_key_stats()['sharesOutstanding']
+            key_stats = stock.get_key_stats()
+            shares_outstanding = key_stats['sharesOutstanding']
+            name = key_stats['companyName']
             if len(largest_trades) != 0 and shares_outstanding > 0:
                 largest_trade = largest_trades[0]['size']
                 trader = largest_trades[0]['venueName']
@@ -108,6 +111,7 @@ def large_trades_halfpcnt(symbols):
                 if magnitude > .005:
                     container['symbol'] = symbol
                     container['largest_trade'] = largest_trade
+                    container['name'] = name
                     container['shares_outstanding'] = shares_outstanding
                     container['magnitude'] = magnitude
                     container['trader'] = trader
@@ -137,6 +141,7 @@ def lowest_buzz_highest_eps(symbols):
         try:
             stock = Stock(symbol)
             key_stats = stock.get_key_stats()
+            name = key_stats['companyName']
             latest_eps = key_stats['latestEPS']
             eps_surprise_pcnt = key_stats['EPSSurprisePercent']
             news_buzz = stock.get_news(range=50)
@@ -147,7 +152,7 @@ def lowest_buzz_highest_eps(symbols):
             if (len(news_buzz) <= 1) and (latest_eps > 0) and (eps_surprise_pcnt > 0) \
                     and (debt <= 0) and (short_ratio is not None) and (short_ratio < 10.0):
                 container['symbol'] = symbol
-                hits.append(container)
+                container['name'] = name
                 logger.success('Hit on {0}:\n\t\t\t\t       EPS Surprise %: {1:.2%}\n\t\t\t\t' \
                         '       Latest EPS: ${2}\n\t\t\t\t       News stories: {3}' \
                         .format(symbol, eps_surprise_pcnt, latest_eps, len(news_buzz)))
@@ -211,7 +216,9 @@ def main():
     elif choice == 4:
         hits = lowest_buzz_highest_eps(industry_symbols)
 
-    logger.success('Found {0} stock(s) of interest in {1} --> {2}'.format(len(hits), industry, hits))
+    logger.success('Found {0} stock(s) of interest in {1} industry.'.format(len(hits), industry))
+    for hit in hits:
+        print('{0} - {1}'.format(hit['symbol'], hit['name']))
 
 
 if __name__ == '__main__':
