@@ -124,7 +124,7 @@ def large_trades_halfpcnt(symbols):
 
 def lowest_buzz_highest_eps(symbols):
     """ Query the API and filter results based on positive EPS, high positive EPS surprise % (> 100%), 
-        and low news buzz in past 50 days (<= 1 story).
+        low news buzz in past 50 days (<= 1 story), zero debt, and a short ratio below 10%.
         This should indicate that people don't really know whats going on in the company and/or analysts
         dont have all the information. This stock could be improperly handicapped and present a nice opportunity.
 
@@ -140,9 +140,12 @@ def lowest_buzz_highest_eps(symbols):
             latest_eps = key_stats['latestEPS']
             eps_surprise_pcnt = key_stats['EPSSurprisePercent']
             news_buzz = stock.get_news(range=50)
+            debt = key_stats['debt']
+            short_ratio = key_stats['shortRatio']
             logger.notice('{0} - {1} news stories EPS surprise {2:.2%}, and latest EPS {3}'
                     .format(symbol, len(news_buzz), eps_surprise_pcnt, latest_eps))
-            if (len(news_buzz) <= 1) and (latest_eps > 0) and (eps_surprise_pcnt > 0):
+            if (len(news_buzz) <= 1) and (latest_eps > 0) and (eps_surprise_pcnt > 0) \
+                    and (debt <= 0) and (short_ratio is not None) and (short_ratio < 10.0):
                 container['symbol'] = symbol
                 hits.append(container)
                 logger.success('Hit on {0}:\n\t\t\t\t       EPS Surprise %: {1:.2%}\n\t\t\t\t' \
@@ -176,10 +179,11 @@ def usage():
             '\n\t\tbasic_industries\n\t\tcapital_goods\n\t\tconsumer_durables\n\t\tconsumer_nondurables\t\t' \
             '\n\t\tconsumer_services\n\t\tenergy\n\t\tfinance\n\t\thealthcare\t\t' \
             '\n\t\tmisc\n\t\tpublic_utilities\n\t\ttechnology\n\t\ttransportation\n' \
-            '\n\tAvailable filters:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS\n' \
-            '\t\t2 - Cramer\'s $100 mil to $2 billion market cap and positive EPS\n' \
-            '\t\t3 - Large trades greater than .5% of shares outstanding\n' \
-            '\t\t4 - Stocks with highest EPS, positive past EPS surprise percentage, and lowest news buzz\n')
+            '\n\tAvailable filters:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS.\n' \
+            '\t\t2 - Cramer\'s $100 mil to $2 billion market cap and positive EPS.\n' \
+            '\t\t3 - Large trades greater than .5% of shares outstanding.\n' \
+            '\t\t4 - Stocks with highest EPS, positive past EPS surprise percentage,\n'
+                    '\t\t    very low news buzz, zero debt, and a short ratio less than 10%.\n')
 
 
 def main():
@@ -205,7 +209,7 @@ def main():
     elif choice == 3:
         hits = large_trades_halfpcnt(industry_symbols)
     elif choice == 4:
-        lowest_buzz_highest_eps(industry_symbols)
+        hits = lowest_buzz_highest_eps(industry_symbols)
 
     logger.success('Found {0} stock(s) of interest in {1} --> {2}'.format(len(hits), industry, hits))
 
