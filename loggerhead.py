@@ -104,15 +104,15 @@ def large_trades_halfpcnt(symbols):
                 trader = largest_trades[0]['venueName']
                 # Is it a hedge fund sized move? Need to refine based on mkt cap and share price. The numbers here are for testing
                 magnitude = (largest_trade / shares_outstanding)
-                logger.notice('{0} - largest trade {1}, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
+                logger.notice('{0} - largest trade {1} shares, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
                 if magnitude > .005:
                     container['symbol'] = symbol
                     container['largest_trade'] = largest_trade
                     container['shares_outstanding'] = shares_outstanding
                     container['magnitude'] = magnitude
                     container['trader'] = trader
-                    logger.success('Hit on {0}:\n\t\t\t\t\t\t    Shares outstanding: {1}\n\t\t\t\t\t\t    Largest trade: {2}' \
-                            '\t\t\t\t\t\t    Magnitude: {3}\n\t\t\t\t\t\t    Executed by: {4}\n'
+                    logger.success('Hit on {0}:\n\t\t\t\t       Shares outstanding: {1}\n\t\t\t\t       Largest trade: {2}' \
+                            '\n\t\t\t\t       Magnitude: {3}\n\t\t\t\t       Executed by: {4}'
                             .format(symbol, shares_outstanding, largest_trade, magnitude, trader))
                     hits.append(container)
 
@@ -170,7 +170,7 @@ def main():
     elif algo == 3:
         hits = large_trades_halfpcnt(industry_symbols)
 
-    logger.success('Found {0} stock(s) of interest in {1}\n'.format(len(hits), industry))
+    logger.success('Found {0} stock(s) of interest in {1}'.format(len(hits), industry))
 
 
 if __name__ == '__main__':
