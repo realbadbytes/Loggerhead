@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # https://iextrading.com/developer/docs
+# https://addisonlynch.github.io/iexfinance/stable/stocks.html#key-stats
 
 import sys
 import csv
