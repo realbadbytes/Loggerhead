@@ -39,7 +39,7 @@ def cramer_micro_cap(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}\n' \
+                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
@@ -111,7 +111,7 @@ def large_trades_halfpcnt(symbols):
                     container['shares_outstanding'] = shares_outstanding
                     container['magnitude'] = magnitude
                     container['trader'] = trader
-                    logger.success('\nHit on {0}:\n\t\t\t\t\t\t    Shares outstanding: {1}\n\t\t\t\t\t\t    Largest trade: {2}\n' \
+                    logger.success('\nHit on {0}:\n\t\t\t\t\t\t    Shares outstanding: {1}\n\t\t\t\t\t\t    Largest trade: {2}' \
                             '\t\t\t\t\t\t    Magnitude: {3}\n\t\t\t\t\t\t    Executed by: {4}\n'
                             .format(symbol, shares_outstanding, largest_trade, magnitude, trader))
                     hits.append(container)
