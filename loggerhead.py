@@ -84,7 +84,7 @@ def cramer_micro_cap(symbols):
 
 
 
-def large_trades_1pcnt(symbols):
+def large_trades_halfpcnt(symbols):
     """ Query the API and filter results based on large trades greater than 1% of shares outstanding.
 
     :param symbols: List of stock symbols from a particular industry.
@@ -166,7 +166,7 @@ def main():
     elif algo == 2:
         hits = cramer_small_cap(industry_symbols)
     elif algo == 3:
-        hits = large_trades_1pcnt(industry_symbols)
+        hits = large_trades_halfpcnt(industry_symbols)
 
     logger.info('Found {0} stock(s) of interest in {1}\n'.format(len(hits), industry))
 
