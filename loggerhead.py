@@ -42,7 +42,7 @@ def cramer_micro_cap(symbols):
                 hits.append(container)
 
         except IEXSymbolError as e:
-            logger.error(str(e))
+            logger.error(str(e) + '\n')
             continue
 
     return hits
@@ -76,7 +76,7 @@ def cramer_micro_cap(symbols):
                 hits.append(container)
 
         except IEXSymbolError as e:
-            logger.error(str(e))
+            logger.error(str(e) + '\n')
             continue
 
     return hits
@@ -96,23 +96,25 @@ def large_trades_1pcnt(symbols):
             stock = Stock(symbol)
             largest_trades = stock.get_largest_trades()
             shares_outstanding = stock.get_key_stats()['sharesOutstanding']
-            if len(largest_trades) != 0:
+            if len(largest_trades) != 0 and shares_outstanding > 0:
                 largest_trade = largest_trades[0]['size']
+                trader = largest_trades[0]['venueName']
                 # Is it a hedge fund sized move? Need to refine based on mkt cap and share price. The numbers here are for testing
                 magnitude = (largest_trade / shares_outstanding)
-                logger.info('{0} largest trade {1}, magnitude {2:.2%}\n'.format(symbol, largest_trade, magnitude))
-                # The largest trade is greater than .25% of the shares outstanding
-                if magnitude > .0025:
+                logger.info('{0} largest trade {1}, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
+                if magnitude > .005:
                     container['symbol'] = symbol
                     container['largest_trade'] = largest_trade
                     container['shares_outstanding'] = shares_outstanding
                     container['magnitude'] = magnitude
+                    container['trader'] = trader
                     logger.success('Hit on {0}:\n\t\t\t\t\t\t    Shares outstanding: {1}\n\t\t\t\t\t\t    Largest trade: {2}\n' \
-                            '\t\t\t\t\t\t    Magnitude: {3}\n'.format(symbol, shares_outstanding, largest_trade, magnitude))
+                            '\t\t\t\t\t\t    Magnitude: {3}\n\t\t\t\t\t\t    Executed by: {4}\n'
+                            .format(symbol, shares_outstanding, largest_trade, magnitude, trader))
                     hits.append(container)
 
         except IEXSymbolError as e:
-            logger.error(str(e))
+            logger.error(str(e) + '\n')
             continue
 
     return hits
@@ -139,7 +141,7 @@ def usage():
             '\n\t\tmisc\n\t\tpublic_utilities\n\t\ttechnology\n\t\ttransportation\n' \
             '\n\tAvailable filters:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS\n' \
             '\t\t2 - Cramer\'s $100 mil to $2 billion market cap and positive EPS\n' \
-            '\t\t3 - Large trades greater than 1% of the common stock\n')
+            '\t\t3 - Large trades greater than .5% of the common stock\n')
 
 
 def main():
