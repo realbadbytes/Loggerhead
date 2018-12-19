@@ -66,7 +66,7 @@ def cramer_small_cap(symbols):
             marketcap = key_stats['marketcap']
             latest_eps = key_stats['latestEPS']
             last_price = stock.get_price()
-            logger.info('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
+            logger.notice('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
 
             if (latest_eps > 0) and (100000000 < marketcap <= 2000000000):
                 multiple = (last_price / latest_eps)
@@ -104,7 +104,7 @@ def large_trades_halfpcnt(symbols):
                 trader = largest_trades[0]['venueName']
                 # Is it a hedge fund sized move? Need to refine based on mkt cap and share price. The numbers here are for testing
                 magnitude = (largest_trade / shares_outstanding)
-                logger.info('{0} - largest trade {1}, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
+                logger.notice('{0} - largest trade {1}, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
                 if magnitude > .005:
                     container['symbol'] = symbol
                     container['largest_trade'] = largest_trade
@@ -149,7 +149,7 @@ def usage():
 
 def main():
     hits = []
-    coloredlogs.install(level='INFO')
+    coloredlogs.install(fmt='%(asctime)s %(name)s %(levelname)s %(message)s', level='INFO')
     coloredlogs.increase_verbosity()
 
     if len(sys.argv) != 3:
@@ -159,7 +159,7 @@ def main():
     # Prepare industry symbols
     industry = sys.argv[1]
     industry_symbols = load_industry_syms(industry)
-    logger.info('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
+    logger.notice('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
 
     # Run selected filter
     algo = int(sys.argv[2])
@@ -170,7 +170,7 @@ def main():
     elif algo == 3:
         hits = large_trades_halfpcnt(industry_symbols)
 
-    logger.info('Found {0} stock(s) of interest in {1}\n'.format(len(hits), industry))
+    logger.success('Found {0} stock(s) of interest in {1}\n'.format(len(hits), industry))
 
 
 if __name__ == '__main__':
