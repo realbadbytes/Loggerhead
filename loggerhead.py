@@ -49,7 +49,7 @@ def cramer_micro_cap(symbols):
     return hits
 
 
-def cramer_micro_cap(symbols):
+def cramer_small_cap(symbols):
     """ Query the API and filter results based on market cap between $100 million to $2 billion and positive EPS.
 
     :param symbols: List of stock symbols from a particular industry.
