@@ -31,7 +31,7 @@ def cramer_micro_cap(symbols):
             marketcap = key_stats['marketcap']
             latest_eps = key_stats['latestEPS']
             last_price = stock.get_price()
-            logger.info('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
+            logger.notice('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
 
             if (latest_eps > 0) and (100000000 < marketcap <= 400000000):
                 multiple = (last_price / latest_eps)
@@ -87,7 +87,7 @@ def cramer_small_cap(symbols):
 
 
 def large_trades_halfpcnt(symbols):
-    """ Query the API and filter results based on large trades greater than 1% of shares outstanding.
+    """ Query the API and filter results based on large trades greater than .5% of shares outstanding.
 
     :param symbols: List of stock symbols from a particular industry.
     :returns: List of stock symbols matching the criteria.
@@ -112,7 +112,7 @@ def large_trades_halfpcnt(symbols):
                     container['magnitude'] = magnitude
                     container['trader'] = trader
                     logger.success('Hit on {0}:\n\t\t\t\t       Shares outstanding: {1}\n\t\t\t\t       Largest trade: {2}' \
-                            '\n\t\t\t\t       Magnitude: {3}\n\t\t\t\t       Executed by: {4}'
+                            '\n\t\t\t\t       Magnitude: {3:.2%}\n\t\t\t\t       Executed by: {4}'
                             .format(symbol, shares_outstanding, largest_trade, magnitude, trader))
                     hits.append(container)
 
@@ -159,7 +159,7 @@ def main():
     # Prepare industry symbols
     industry = sys.argv[1]
     industry_symbols = load_industry_syms(industry)
-    logger.notice('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
+    logger.info('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
 
     # Run selected filter
     algo = int(sys.argv[2])
@@ -170,7 +170,7 @@ def main():
     elif algo == 3:
         hits = large_trades_halfpcnt(industry_symbols)
 
-    logger.success('Found {0} stock(s) of interest in {1}'.format(len(hits), industry))
+    logger.success('Found {0} stock(s) of interest in {1} --> {2}'.format(len(hits), industry, hits))
 
 
 if __name__ == '__main__':
