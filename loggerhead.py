@@ -16,7 +16,7 @@ endpoint = 'https://api.iextrading.com/1.0'
 
 
 def cramer_micro_cap(symbols):
-    """ Query the API and filter results based on market cap between $100-$400 million and positive EPS.
+    """ Query the API and process results based on market cap between $100-$400 million and positive EPS.
 
     :param symbols: List of stock symbols from a particular industry.
     :returns: List of stock symbols matching the criteria.
@@ -51,7 +51,7 @@ def cramer_micro_cap(symbols):
 
 
 def cramer_small_cap(symbols):
-    """ Query the API and filter results based on market cap between $100 million to $2 billion and positive EPS.
+    """ Query the API and process results based on market cap between $100 million to $2 billion and positive EPS.
 
     :param symbols: List of stock symbols from a particular industry.
     :returns: List of stock symbols matching the criteria.
@@ -87,7 +87,7 @@ def cramer_small_cap(symbols):
 
 
 def large_trades_halfpcnt(symbols):
-    """ Query the API and filter results based on large trades greater than .5% of shares outstanding.
+    """ Query the API and process results based on large trades greater than .5% of shares outstanding.
 
     :param symbols: List of stock symbols from a particular industry.
     :returns: List of stock symbols matching the criteria.
@@ -123,7 +123,7 @@ def large_trades_halfpcnt(symbols):
     return hits
 
 def lowest_buzz_highest_eps(symbols):
-    """ Query the API and filter results based on positive EPS, high positive EPS surprise % (> 100%), 
+    """ Query the API and process results based on positive EPS, high positive EPS surprise % (> 100%), 
         low news buzz in past 50 days (<= 1 story), zero debt, and a short ratio below 10%.
         This should indicate that people don't really know whats going on in the company and/or analysts
         dont have all the information. This stock could be improperly handicapped and present a nice opportunity.
@@ -179,7 +179,7 @@ def usage():
             '\n\t\tbasic_industries\n\t\tcapital_goods\n\t\tconsumer_durables\n\t\tconsumer_nondurables\t\t' \
             '\n\t\tconsumer_services\n\t\tenergy\n\t\tfinance\n\t\thealthcare\t\t' \
             '\n\t\tmisc\n\t\tpublic_utilities\n\t\ttechnology\n\t\ttransportation\n' \
-            '\n\tAvailable filters:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS.\n' \
+            '\n\tAvailable queries:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS.\n' \
             '\t\t2 - Cramer\'s $100 mil to $2 billion market cap and positive EPS.\n' \
             '\t\t3 - Large trades greater than .5% of shares outstanding.\n' \
             '\t\t4 - Stocks with highest EPS, positive past EPS surprise percentage,\n'
@@ -200,7 +200,7 @@ def main():
     industry_symbols = load_industry_syms(industry)
     logger.info('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
 
-    # Run selected filter
+    # Run selected query
     choice = int(sys.argv[2])
     if choice == 1:
         hits = cramer_micro_cap(industry_symbols)
