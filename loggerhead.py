@@ -39,7 +39,7 @@ def cramer_micro_cap(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}' \
+                logger.success('Hit on {0}:{1}\n\t\t\t\t       Last price: {2}\n\t\t\t\t       Multiple: {3}' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
@@ -74,7 +74,7 @@ def cramer_small_cap(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}' \
+                logger.success('Hit on {0}:{1}\n\t\t\t\t       Last price: {2}\n\t\t\t\t       Multiple: {3}' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
