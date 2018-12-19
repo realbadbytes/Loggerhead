@@ -31,6 +31,7 @@ def cramer_micro_cap(symbols):
             marketcap = key_stats['marketcap']
             latest_eps = key_stats['latestEPS']
             last_price = stock.get_price()
+            logger.info('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
 
             if (latest_eps > 0) and (100000000 < marketcap <= 400000000):
                 multiple = (last_price / latest_eps)
@@ -65,6 +66,7 @@ def cramer_small_cap(symbols):
             marketcap = key_stats['marketcap']
             latest_eps = key_stats['latestEPS']
             last_price = stock.get_price()
+            logger.info('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
 
             if (latest_eps > 0) and (100000000 < marketcap <= 2000000000):
                 multiple = (last_price / latest_eps)
@@ -72,7 +74,7 @@ def cramer_small_cap(symbols):
                 container['marketcap'] = marketcap
                 container['last_price'] = last_price
                 container['multiple'] = multiple
-                logger.success('Hit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}\n' \
+                logger.success('\nHit on {0}:{1}\n\t\t\t\t\t\t    Last price: {2}\n\t\t\t\t\t\t    Multiple: {3}\n' \
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
@@ -102,14 +104,14 @@ def large_trades_halfpcnt(symbols):
                 trader = largest_trades[0]['venueName']
                 # Is it a hedge fund sized move? Need to refine based on mkt cap and share price. The numbers here are for testing
                 magnitude = (largest_trade / shares_outstanding)
-                logger.info('{0} largest trade {1}, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
+                logger.info('{0} - largest trade {1}, magnitude {2:.2%}'.format(symbol, largest_trade, magnitude))
                 if magnitude > .005:
                     container['symbol'] = symbol
                     container['largest_trade'] = largest_trade
                     container['shares_outstanding'] = shares_outstanding
                     container['magnitude'] = magnitude
                     container['trader'] = trader
-                    logger.success('Hit on {0}:\n\t\t\t\t\t\t    Shares outstanding: {1}\n\t\t\t\t\t\t    Largest trade: {2}\n' \
+                    logger.success('\nHit on {0}:\n\t\t\t\t\t\t    Shares outstanding: {1}\n\t\t\t\t\t\t    Largest trade: {2}\n' \
                             '\t\t\t\t\t\t    Magnitude: {3}\n\t\t\t\t\t\t    Executed by: {4}\n'
                             .format(symbol, shares_outstanding, largest_trade, magnitude, trader))
                     hits.append(container)
@@ -157,7 +159,7 @@ def main():
     # Prepare industry symbols
     industry = sys.argv[1]
     industry_symbols = load_industry_syms(industry)
-    logger.info('Loaded {0} symbols in {1}\n'.format(len(industry_symbols), industry))
+    logger.info('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
 
     # Run selected filter
     algo = int(sys.argv[2])
