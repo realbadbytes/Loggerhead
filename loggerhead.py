@@ -2,14 +2,16 @@
 # https://iextrading.com/developer/docs
 # https://addisonlynch.github.io/iexfinance/stable/stocks.html#key-stats
 
+# https://www.nasdaq.com/market-activity/stocks/screener
+
 import sys
 import csv
+import os
 import time
 import logging
 import coloredlogs
 import verboselogs
 from iexfinance.stocks import Stock
-from iexfinance.utils.exceptions import IEXSymbolError
 
 logger = verboselogs.VerboseLogger('Loggerhead')
 endpoint = 'https://api.iextrading.com/1.0'
@@ -25,13 +27,13 @@ def cramer_micro_cap(symbols):
     for symbol in symbols:
         container = {}
         try:
-            stock = Stock(symbol)
+            stock = Stock(symbol, token="sk_73515507495b4464b4125514056f63e0")
             key_stats = stock.get_key_stats()
-            name = key_stats['companyName']
-            marketcap = key_stats['marketcap']
-            latest_eps = key_stats['latestEPS']
-            last_price = stock.get_price()
-            logger.notice('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
+            name = key_stats['companyName'].values[0]
+            marketcap = key_stats['marketcap'].values[0]
+            latest_eps = key_stats['ttmEPS'].values[0]
+            last_price = stock.get_price().values[0]
+            #logger.notice('{0} - Market cap {1}, Latest EPS {2}'.format(symbol, marketcap, latest_eps))
 
             if (latest_eps > 0) and (100000000 < marketcap <= 400000000):
                 multiple = (last_price / latest_eps)
@@ -43,7 +45,7 @@ def cramer_micro_cap(symbols):
                         .format(name, symbol, last_price, multiple))
                 hits.append(container)
 
-        except IEXSymbolError as e:
+        except  Exception as e:
             logger.error(str(e))
             continue
 
@@ -56,6 +58,7 @@ def cramer_small_cap(symbols):
     :param symbols: List of stock symbols from a particular industry.
     :returns: List of stock symbols matching the criteria.
     """
+    symbols = list(symbols.keys())
     hits = []
     for symbol in symbols:
         container = {}
@@ -165,58 +168,36 @@ def lowest_buzz_highest_eps(symbols):
     return hits
 
 
-def load_industry_syms(industry):
+def load_data():
     """ Parse all symbols from .csv file containing all stock symbols for a particular industry.
 
     :param industry: User-provided industry string
     :returns: List of symbols in a particular industry
     """
-    industry_symbols = []
-    with open('industry_data/'+industry+'.csv') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            industry_symbols.append(row['Symbol'])
-    return industry_symbols
-
-
-def usage():
-    print('Loggerhead v1.0\n\n\tusage: ./loggerhead.py [industry] [filter]\n\n\tAvailable industries:\n' \
-            '\n\t\tbasic_industries\n\t\tcapital_goods\n\t\tconsumer_durables\n\t\tconsumer_nondurables\t\t' \
-            '\n\t\tconsumer_services\n\t\tenergy\n\t\tfinance\n\t\thealthcare\t\t' \
-            '\n\t\tmisc\n\t\tpublic_utilities\n\t\ttechnology\n\t\ttransportation\n' \
-            '\n\tAvailable queries:\n \n\t\t1 - Cramer\'s $100-$400 million market cap and positive EPS.\n' \
-            '\t\t2 - Cramer\'s $100 mil to $2 billion market cap and positive EPS.\n' \
-            '\t\t3 - Large trades greater than .5% of shares outstanding.\n' \
-            '\t\t4 - Stocks with highest EPS, positive past EPS surprise percentage,\n'
-                    '\t\t    very low news buzz, zero debt, and a short ratio less than 10%.\n')
-
+    market_data = {}
+    directory = os.fsencode('industry_data')
+    for file in os.listdir(directory):
+        with open('industry_data/' + file.decode('utf-8')) as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                market_data[row['Symbol']] = row
+    return market_data
 
 def main():
     hits = []
     coloredlogs.install(fmt='%(asctime)s %(name)s %(levelname)s %(message)s', level='INFO')
     coloredlogs.increase_verbosity()
 
-    if len(sys.argv) != 3:
-        usage()
-        exit(0)
-
     # Prepare industry symbols
-    industry = sys.argv[1]
-    industry_symbols = load_industry_syms(industry)
-    logger.info('Loaded {0} symbols in {1}'.format(len(industry_symbols), industry))
+    market_data = load_data()
 
     # Run selected query
-    choice = int(sys.argv[2])
-    if choice == 1:
-        hits = cramer_micro_cap(industry_symbols)
-    elif choice == 2:
-        hits = cramer_small_cap(industry_symbols)
-    elif choice == 3:
-        hits = large_trades_halfpcnt(industry_symbols)
-    elif choice == 4:
-        hits = lowest_buzz_highest_eps(industry_symbols)
+    hits = cramer_micro_cap(market_data)
+    #hits = cramer_small_cap(market_data)
+    #hits = large_trades_halfpcnt(market_data)
+    #hits = lowest_buzz_highest_eps(market_data)
 
-    logger.success('Found {0} stock(s) of interest in {1} industry.'.format(len(hits), industry))
+    logger.success('Found {0} stock(s) of interest'.format(len(hits)))
     for hit in hits:
         print('{0} - {1}'.format(hit['symbol'], hit['name']))
 
